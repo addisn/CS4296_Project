@@ -1,0 +1,87 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: 'AWS::Serverless-2016-10-31'
+Description: Create API Gateway, Lambda, Rekognition services
+
+Parameters:
+  BucketName:
+    Type: String
+  ObjectKey:
+    Type: String
+
+Resources:
+  CreateAPIGatewaySwagger:
+
+  CreateLambdaRole:
+    Type: "AWS::IAM::Role"
+    Properties:
+      RoleName: cf_api_lambda_role
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          -
+            Effect: "Allow"
+            Principal:
+              Service:
+                - "lambda.amazonaws.com"
+            Action:
+              - "sts:AssumeRole"
+      Path: "/"
+      Policies:
+        -
+          PolicyName: "cloudwatch_log"
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              -
+                Effect: "Allow"
+                Action: ["logs:CreateLogGroup","logs:CreateLogStream","logs:PutLogEvents"]
+                Resource: "arn:aws:logs:*:*:*"
+  CreateLambdaUploadFunc:
+    Type: 'AWS::Serverless::Function'
+    Properties:
+      CodeUri:
+        Bucket: !Ref BucketName
+        Key: !Ref ObjectKey
+      Handler: uploadFunc.handler
+      Runtime: nodejs8.10
+      Description: ''
+      MemorySize: 128
+      Timeout: 20
+      Role: !GetAtt CreateLambdaRole.Arn
+      FunctionName: lambda-api-function-cf
+      Environment:
+        Variables:
+      Events:
+        ReceiveAPIGatewayData:
+          Type: Api
+          Properties:
+            RestApiId: !Ref CreateAPIGateway
+            Path: /upload
+            Method: POST
+  CreateLambdaS3TriggerRekoFunc:
+    Type: 'AWS::Serverless::Function'
+    Properties:
+      CodeUri:
+        Bucket: !Ref BucketName
+        Key: !Ref ObjectKey
+      Handler: uploadFunc.handler
+      Runtime: nodejs8.10
+      Description: ''
+      MemorySize: 128
+      Timeout: 20
+      Role: !GetAtt CreateLambdaRole.Arn
+      FunctionName: lambda-api-function-cf
+      Environment:
+        Variables:
+      Events:
+        ReceiveAPIGatewayData:
+          Type: Api
+          Properties:
+            RestApiId: !Ref CreateAPIGateway
+            Path: /upload
+            Method: POST
+
+Outputs:
+  ApiUrl:
+    Description: URL of your API endpoint
+    Value: !Sub https://${CreateAPIGatewaySwagger}.execute-api.${AWS::Region}.amazonaws.com
