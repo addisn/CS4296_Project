@@ -7,6 +7,15 @@ class ImageResultsModel extends DynamoDBAdapterBase {
         super('image-label-results');
     }
 
+    getImageLabelResults(filename) {
+        const params = {
+            Key: {
+                "Filename": filename
+            }
+        };
+        return this.getItem(params);
+    }
+
     putImageLabelResults(filename, labelResults) {
         const params = {
             Item: {

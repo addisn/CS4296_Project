@@ -22,7 +22,7 @@ class DynamoDBAdapterBase {
             this.dynamodbDC.get(params, (err, data) => {
                 // debug('[getItem] - End');
                 if (err) return reject(err);
-                return resolve(data);
+                return resolve(data.Item);
             });
         });
     }
