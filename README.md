@@ -137,7 +137,7 @@ CloudFormation can help you delete all services which created by the stack itsel
 
 **You should also delete all S3 buckets manually.**
 
-<kbd><img src="./ReadmePicture/9.PNG" /></kbd>
+<kbd><img src="./ReadmePicture/9.png" /></kbd>
 
 If you see the "DELETE_FAILED", you should follow the CloudFormation to **delete remaining services manually**.
 
