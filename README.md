@@ -142,3 +142,7 @@ CloudFormation can help you delete all services which created by the stack itsel
 If you see the "DELETE_FAILED", you should follow the CloudFormation to **delete remaining services manually**.
 
 <kbd><img src="./ReadmePicture/10.PNG" /></kbd>
+
+### Links
+
+[AWS Serverless Application Model (SAM)](https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessapplication)
