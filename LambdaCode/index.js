@@ -19,41 +19,54 @@ function genMd5(data) {
 exports.handler = async (event, context) => {
     console.log(Object.keys(event));
 
+    //// check multipart/form boundary
     const boundary = multipart.getBoundary(event.headers['content-type']);
-    if (!boundary) return {statusCode: 400, body: 'Cannot find boundary from header content-type'};
+    if (!boundary) return {
+        statusCode: 400,
+        body: JSON.stringify({message: 'Cannot find boundary from header content-type'})
+    };
 
+    //// parse image data from base64 multipart/form, check image type
+    let imgBuff, imgExt;
     try {
         const bodyBuff = Buffer.from(event.body, 'base64');
         const parts = multipart.Parse(bodyBuff, boundary);
         console.log(parts);
 
-        const imgType = fileType(parts[0].data).ext;
-        if (imgType !== jpg || imgType !== png) return {statusCode: 400, body: 'Unsupported image type'};
-        const imgMd5 = genMd5(imgBuff);
-        console.log(imgMd5);
+        imgBuff = parts[0].data;
+        const fType = fileType(imgBuff);
+        imgExt = fType && fType.ext;
+        if (!imgExt || (imgExt !== jpg && imgExt !== png)) return {
+            statusCode: 400,
+            body: JSON.stringify({message: 'Unsupported image type'})
+        };
     } catch (e) {
         console.log(e);
-        return {statusCode: 400, body: e.message};
+        return {
+            statusCode: 400,
+            body: JSON.stringify({message: e.message})
+        };
     }
 
-    // const imgType = fileType(imgBuff).ext;
-    // const imgMd5 = genMd5(imgBuff);
-    //
-    // //// check image is existed in S3 or not
-    // const isImgExisted = await s3Adapter.headObject(imgMd5 + imgType).then(() => true).catch(() => false);
-    //
-    // if (!isImgExisted) {
-    //     const param = {
-    //         Body: imgBuff,
-    //         Key: imgMd5 + imgType,
-    //     };
-    //     await s3Adapter.putObject(param);
-    // }
+    const imgMd5 = genMd5(imgBuff);
+    console.log(imgMd5);
 
-    const response = {
+    //// check image is existed in S3 or not
+    const isImgExisted = await s3Adapter.headObject(`${imgMd5}.${imgExt}`).then(() => true).catch(() => false);
+
+    if (!isImgExisted) {
+        const param = {
+            Body: imgBuff,
+            Key: `${imgMd5}.${imgExt}`,
+        };
+        await s3Adapter.putObject(param);
+    }
+
+    return {
         statusCode: 200,
-        body: JSON.stringify('Hello from Lambda!'),
+        body: JSON.stringify({
+            message: 'Hello from Lambda!',
+            imageFile: `${imgMd5}.${imgExt}`
+        }),
     };
-
-    return response;
 };
