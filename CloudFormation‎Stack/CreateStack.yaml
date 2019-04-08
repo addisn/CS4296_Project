@@ -37,6 +37,7 @@ Resources:
                 responses:
                   default:
                     statusCode: "200"
+                uri: !Sub arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${CreateLambdaGetResultFunc.Arn}/invocations
                 passthroughBehavior: "when_no_match"
                 httpMethod: "POST"
                 contentHandling: "CONVERT_TO_TEXT"
@@ -83,6 +84,7 @@ Resources:
                 responses:
                   default:
                     statusCode: "200"
+                uri: !Sub arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${CreateLambdaUploadFunc.Arn}/invocations
                 passthroughBehavior: "when_no_match"
                 httpMethod: "POST"
                 contentHandling: "CONVERT_TO_TEXT"
@@ -131,6 +133,7 @@ Resources:
                 responses:
                   default:
                     statusCode: "200"
+                uri: !Sub arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${CreateLambdaS3TriggerRekoFunc.Arn}/invocations
                 passthroughBehavior: "when_no_match"
                 httpMethod: "POST"
                 contentHandling: "CONVERT_TO_TEXT"
@@ -237,7 +240,7 @@ Resources:
     Type: "AWS::IAM::Role"
     DependsOn: [ CreateDynamodbTableImageLabel ]
     Properties:
-      RoleName: cf_cs4296_lambda_role
+      RoleName: cf_cs4296_lambda_s3_trigger_role
       AssumeRolePolicyDocument:
         Version: "2012-10-17"
         Statement:
@@ -248,6 +251,8 @@ Resources:
             Action:
               - "sts:AssumeRole"
       Path: "/"
+      ManagedPolicyArns:
+        - "arn:aws:iam::aws:policy/AmazonS3ReadOnlyAccess"
       Policies:
         - PolicyName: "cloudwatch_log"
           PolicyDocument:
@@ -283,12 +288,12 @@ Resources:
 
   CreateLambdaUploadFunc:
     Type: 'AWS::Serverless::Function'
-    DependsOn: [ CreateS3ImageStore, CreateAPIGatewaySwagger, CreateLambdaRole ]
+    DependsOn: [ CreateS3ImageStore, CreateLambdaRole ]
     Properties:
       CodeUri:
         Bucket: !Ref LambdaCodeBucketName
         Key: !Ref LambdaCodeObjectKey
-      Handler: 'LambdaCode/index.js'
+      Handler: 'LambdaCode/index.handler'
       Runtime: nodejs8.10
       Description: ''
       MemorySize: 128
@@ -308,12 +313,12 @@ Resources:
 
   CreateLambdaGetResultFunc:
     Type: 'AWS::Serverless::Function'
-    DependsOn: [ CreateS3ImageStore, CreateAPIGatewaySwagger, CreateLambdaRole ]
+    DependsOn: [ CreateS3ImageStore, CreateLambdaRole ]
     Properties:
       CodeUri:
         Bucket: !Ref LambdaCodeBucketName
         Key: !Ref LambdaCodeObjectKey
-      Handler: 'LambdaCode/getImageOrResult.js'
+      Handler: 'LambdaCode/getImageOrResult.handler'
       Runtime: nodejs8.10
       Description: ''
       MemorySize: 128
@@ -324,7 +329,7 @@ Resources:
         Variables:
           Region: !Ref AWS::Region
           ImageStoreBucket: !Ref CreateS3ImageStore
-          ImageLabelResultsTable: "image-label-results-cs4296"
+          ImageResultsTable: "image-label-results-cs4296"
       Events:
         ReceiveAPIGatewayData1:
           Type: Api
@@ -346,26 +351,23 @@ Resources:
       CodeUri:
         Bucket: !Ref LambdaCodeBucketName
         Key: !Ref LambdaCodeObjectKey
-      Handler: 'LambdaCode/s3TriggerRekognition.js'
+      Handler: 'LambdaCode/s3TriggerRekognition.handler'
       Runtime: nodejs8.10
       Description: ''
       MemorySize: 128
       Timeout: 10
       Role: !GetAtt CreateLambdaS3TriggerRole.Arn
-      Policies:
-        - S3ReadPolicy:
-            BucketName: !Ref CreateS3ImageStore
       FunctionName: s3trigger-reko-cs4296
       Environment:
         Variables:
           Region: !Ref AWS::Region
-          ImageLabelResultsTable: "image-label-results-cs4296"
+          ImageResultsTable: "image-label-results-cs4296"
       Events:
         ImageUpload:
           Type: S3
           Properties:
             Bucket: !Ref CreateS3ImageStore
-            Events: s3:ObjectCreated:put
+            Events: "s3:ObjectCreated:Put"
 
 Outputs:
   ApiUrl:
