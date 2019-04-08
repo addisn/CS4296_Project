@@ -8,7 +8,7 @@ const AWS = require('aws-sdk');
 //// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/DynamoDB/DocumentClient.html
 
 class DynamoDBAdapterBase {
-    constructor(tableName, indexName, region = 'us-east-1') {
+    constructor(tableName, indexName, region) {
         // this.dynamodb = new AWS.DynamoDB();
         this.dynamodbDC = new AWS.DynamoDB.DocumentClient({region});
         this.tName = tableName;

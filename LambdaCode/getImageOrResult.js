@@ -3,8 +3,12 @@
 const S3AdapterBase = require('./Adapters/S3AdapterBase');
 const ImageResultsModel = require('./Models/ImageResultsModel');
 
-const s3Adapter = new S3AdapterBase('lambda-test1-upload');
-const imageResultsModel = new ImageResultsModel();
+const Region = process.env.Region;
+const ImageResultsTable = process.env.ImageResultsTable;
+const ImageStoreBucket = process.env.ImageStoreBucket;
+
+const s3Adapter = new S3AdapterBase(ImageStoreBucket);
+const imageResultsModel = new ImageResultsModel(ImageResultsTable, undefined, Region);
 
 const eventTemplate = {
     "resource": "/uploaded-image",

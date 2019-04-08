@@ -322,6 +322,7 @@ Resources:
       FunctionName: handle-get-image-result-cs4296
       Environment:
         Variables:
+          Region: !Ref AWS::Region
           ImageStoreBucket: !Ref CreateS3ImageStore
           ImageLabelResultsTable: "image-label-results-cs4296"
       Events:
@@ -357,6 +358,7 @@ Resources:
       FunctionName: s3trigger-reko-cs4296
       Environment:
         Variables:
+          Region: !Ref AWS::Region
           ImageLabelResultsTable: "image-label-results-cs4296"
       Events:
         ImageUpload:

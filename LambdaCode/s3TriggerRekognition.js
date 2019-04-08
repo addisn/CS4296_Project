@@ -3,8 +3,11 @@
 const RekognitionAdapterBase = require('./Adapters/RekognitionAdapterBase');
 const ImageResultsModel = require('./Models/ImageResultsModel');
 
-const rekognitionAdapter = new RekognitionAdapterBase();
-const imageResultsModel = new ImageResultsModel();
+const Region = process.env.Region;
+const ImageResultsTable = process.env.ImageResultsTable;
+
+const rekognitionAdapter = new RekognitionAdapterBase(Region);
+const imageResultsModel = new ImageResultsModel(ImageResultsTable, undefined, Region);
 
 exports.handler = async (event) => {
     const allJobs = [];

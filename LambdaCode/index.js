@@ -3,9 +3,11 @@
 const crypto = require('crypto');
 const fileType = require('file-type');
 const multipart = require('parse-multipart');
-
 const S3AdapterBase = require('./Adapters/S3AdapterBase');
-const s3Adapter = new S3AdapterBase('lambda-test1-upload');
+
+const ImageStoreBucket = process.env.ImageStoreBucket;
+
+const s3Adapter = new S3AdapterBase(ImageStoreBucket);
 
 const jpg = 'jpg';
 const png = 'png';

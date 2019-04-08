@@ -3,8 +3,8 @@
 const DynamoDBAdapterBase = require('../Adapters/DynamoDBAdapterBase');
 
 class ImageResultsModel extends DynamoDBAdapterBase {
-    constructor() {
-        super('image-label-results');
+    constructor(tableName, indexName, region) {
+        super(tableName, indexName, region);
     }
 
     getImageLabelResults(filename) {

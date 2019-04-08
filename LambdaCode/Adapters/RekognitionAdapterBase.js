@@ -5,7 +5,7 @@ const AWS = require('aws-sdk');
 //// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Rekognition.html
 
 class RekognitionAdapterBase {
-    constructor(region = 'us-east-1') {
+    constructor(region) {
         this.rekognition = new AWS.Rekognition({region});
     }
 
