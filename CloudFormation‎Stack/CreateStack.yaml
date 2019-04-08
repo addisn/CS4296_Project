@@ -3,23 +3,197 @@ Transform: 'AWS::Serverless-2016-10-31'
 Description: Create API Gateway, Lambda, Rekognition services
 
 Parameters:
-  BucketName:
+  LambdaCodeBucketName:
     Type: String
-  ObjectKey:
+  LambdaCodeObjectKey:
     Type: String
 
 Resources:
+  CreateS3ImageStore:
+    Type: AWS::S3::Bucket
+
   CreateAPIGatewaySwagger:
+    Type: 'AWS::Serverless::Api'
+    Properties:
+      StageName: 'prod'
+      DefinitionBody:
+        swagger: "2.0"
+        info:
+          title: "image-recognition-api-cs4296"
+        basePath: "/prod"
+        schemes:
+          - "https"
+        paths:
+          /labelled-result:
+            get:
+              produces:
+                - "application/json"
+              responses:
+                "200":
+                  description: "200 response"
+                  schema:
+                    $ref: "#/definitions/Empty"
+              x-amazon-apigateway-integration:
+                responses:
+                  default:
+                    statusCode: "200"
+                passthroughBehavior: "when_no_match"
+                httpMethod: "POST"
+                contentHandling: "CONVERT_TO_TEXT"
+                type: "aws_proxy"
+            options:
+              consumes:
+                - "application/json"
+              produces:
+                - "application/json"
+              responses:
+                "200":
+                  description: "200 response"
+                  schema:
+                    $ref: "#/definitions/Empty"
+                  headers:
+                    Access-Control-Allow-Origin:
+                      type: "string"
+                    Access-Control-Allow-Methods:
+                      type: "string"
+                    Access-Control-Allow-Headers:
+                      type: "string"
+              x-amazon-apigateway-integration:
+                responses:
+                  default:
+                    statusCode: "200"
+                    responseParameters:
+                      method.response.header.Access-Control-Allow-Methods: "'DELETE,GET,HEAD,OPTIONS,PATCH,POST,PUT'"
+                      method.response.header.Access-Control-Allow-Headers: "'Content-Type,Authorization,X-Amz-Date,X-Api-Key,X-Amz-Security-Token'"
+                      method.response.header.Access-Control-Allow-Origin: "'*'"
+                passthroughBehavior: "when_no_match"
+                requestTemplates:
+                  application/json: "{\"statusCode\": 200}"
+                type: "mock"
+          /upload:
+            post:
+              produces:
+                - "application/json"
+              responses:
+                "200":
+                  description: "200 response"
+                  schema:
+                    $ref: "#/definitions/Empty"
+              x-amazon-apigateway-integration:
+                responses:
+                  default:
+                    statusCode: "200"
+                passthroughBehavior: "when_no_match"
+                httpMethod: "POST"
+                contentHandling: "CONVERT_TO_TEXT"
+                type: "aws_proxy"
+            options:
+              consumes:
+                - "application/json"
+              produces:
+                - "application/json"
+              responses:
+                "200":
+                  description: "200 response"
+                  schema:
+                    $ref: "#/definitions/Empty"
+                  headers:
+                    Access-Control-Allow-Origin:
+                      type: "string"
+                    Access-Control-Allow-Methods:
+                      type: "string"
+                    Access-Control-Allow-Headers:
+                      type: "string"
+              x-amazon-apigateway-integration:
+                responses:
+                  default:
+                    statusCode: "200"
+                    responseParameters:
+                      method.response.header.Access-Control-Allow-Methods: "'DELETE,GET,HEAD,OPTIONS,PATCH,POST,PUT'"
+                      method.response.header.Access-Control-Allow-Headers: "'Content-Type,Authorization,X-Amz-Date,X-Api-Key,X-Amz-Security-Token'"
+                      method.response.header.Access-Control-Allow-Origin: "'*'"
+                passthroughBehavior: "when_no_match"
+                requestTemplates:
+                  application/json: "{\"statusCode\": 200}"
+                type: "mock"
+          /uploaded-image:
+            get:
+              produces:
+                - "image/jpeg"
+                - "image/png"
+                - "application/json"
+              responses:
+                "200":
+                  description: "200 response"
+                  schema:
+                    $ref: "#/definitions/Empty"
+              x-amazon-apigateway-integration:
+                responses:
+                  default:
+                    statusCode: "200"
+                passthroughBehavior: "when_no_match"
+                httpMethod: "POST"
+                contentHandling: "CONVERT_TO_TEXT"
+                type: "aws_proxy"
+            options:
+              consumes:
+                - "application/json"
+              produces:
+                - "application/json"
+              responses:
+                "200":
+                  description: "200 response"
+                  schema:
+                    $ref: "#/definitions/Empty"
+                  headers:
+                    Access-Control-Allow-Origin:
+                      type: "string"
+                    Access-Control-Allow-Methods:
+                      type: "string"
+                    Access-Control-Allow-Headers:
+                      type: "string"
+              x-amazon-apigateway-integration:
+                responses:
+                  default:
+                    statusCode: "200"
+                    responseParameters:
+                      method.response.header.Access-Control-Allow-Methods: "'DELETE,GET,HEAD,OPTIONS,PATCH,POST,PUT'"
+                      method.response.header.Access-Control-Allow-Headers: "'Content-Type,Authorization,X-Amz-Date,X-Api-Key,X-Amz-Security-Token'"
+                      method.response.header.Access-Control-Allow-Origin: "'*'"
+                passthroughBehavior: "when_no_match"
+                requestTemplates:
+                  application/json: "{\"statusCode\": 200}"
+                type: "mock"
+        definitions:
+          Empty:
+            type: "object"
+            title: "Empty Schema"
+        x-amazon-apigateway-binary-media-types:
+          - "*/*"
+
+  CreateDynamodbTableImageLabel:
+    Type: "AWS::DynamoDB::Table"
+    Properties:
+      AttributeDefinitions:
+        - AttributeName: "Filename"
+          AttributeType: "S"
+      KeySchema:
+        - AttributeName: "Filename"
+          KeyType: "HASH"
+      ProvisionedThroughput:
+        ReadCapacityUnits: 1
+        WriteCapacityUnits: 1
+      TableName: "image-label-results-cs4296"
 
   CreateLambdaRole:
     Type: "AWS::IAM::Role"
+    DependsOn: [ CreateS3ImageStore, CreateDynamodbTableImageLabel ]
     Properties:
-      RoleName: cf_api_lambda_role
+      RoleName: cf_cs4296_lambda_role
       AssumeRolePolicyDocument:
         Version: "2012-10-17"
         Statement:
-          -
-            Effect: "Allow"
+          - Effect: "Allow"
             Principal:
               Service:
                 - "lambda.amazonaws.com"
@@ -27,61 +201,173 @@ Resources:
               - "sts:AssumeRole"
       Path: "/"
       Policies:
-        -
-          PolicyName: "cloudwatch_log"
+        - PolicyName: "cloudwatch_log"
           PolicyDocument:
             Version: "2012-10-17"
             Statement:
-              -
-                Effect: "Allow"
+              - Effect: "Allow"
                 Action: ["logs:CreateLogGroup","logs:CreateLogStream","logs:PutLogEvents"]
                 Resource: "arn:aws:logs:*:*:*"
+        - PolicyName: "s3_access"
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: "Allow"
+                Action: ["s3:PutObject","s3:GetObject","s3:ListBucket"]
+                Resource: !Sub "arn:aws:s3:::${CreateS3ImageStore}/*"
+        - PolicyName: "dynamodb_table_access"
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: "Allow"
+                Action: [
+                  "dynamodb:BatchGetItem",
+                  "dynamodb:DescribeTable",
+                  "dynamodb:GetItem",
+                  "dynamodb:ListTables",
+                  "dynamodb:Query",
+                  "dynamodb:Scan",
+                  "dynamodb:BatchWriteItem",
+                  "dynamodb:UpdateItem",
+                  "dynamodb:PutItem"
+                ]
+                Resource: [!Join [ "*", [ !GetAtt CreateDynamodbTableImageLabel.Arn, "" ] ]]
+
+  CreateLambdaS3TriggerRole:
+    Type: "AWS::IAM::Role"
+    DependsOn: [ CreateDynamodbTableImageLabel ]
+    Properties:
+      RoleName: cf_cs4296_lambda_role
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: "Allow"
+            Principal:
+              Service:
+                - "lambda.amazonaws.com"
+            Action:
+              - "sts:AssumeRole"
+      Path: "/"
+      Policies:
+        - PolicyName: "cloudwatch_log"
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: "Allow"
+                Action: ["logs:CreateLogGroup","logs:CreateLogStream","logs:PutLogEvents"]
+                Resource: "arn:aws:logs:*:*:*"
+        - PolicyName: "reko_access"
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: "Allow"
+                Action: ["rekognition:DetectLabels","rekognition:DetectFaces","rekognition:DetectModerationLabels","rekognition:DetectText"]
+                Resource: "*"
+        - PolicyName: "dynamodb_table_access"
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: "Allow"
+                Action: [
+                  "dynamodb:BatchGetItem",
+                  "dynamodb:DescribeTable",
+                  "dynamodb:GetItem",
+                  "dynamodb:ListTables",
+                  "dynamodb:Query",
+                  "dynamodb:Scan",
+                  "dynamodb:BatchWriteItem",
+                  "dynamodb:UpdateItem",
+                  "dynamodb:PutItem"
+                ]
+                Resource: [!Join [ "*", [ !GetAtt CreateDynamodbTableImageLabel.Arn, "" ] ]]
+
   CreateLambdaUploadFunc:
     Type: 'AWS::Serverless::Function'
+    DependsOn: [ CreateS3ImageStore, CreateAPIGatewaySwagger, CreateLambdaRole ]
     Properties:
       CodeUri:
-        Bucket: !Ref BucketName
-        Key: !Ref ObjectKey
-      Handler: uploadFunc.handler
+        Bucket: !Ref LambdaCodeBucketName
+        Key: !Ref LambdaCodeObjectKey
+      Handler: 'LambdaCode/index.js'
       Runtime: nodejs8.10
       Description: ''
       MemorySize: 128
       Timeout: 20
       Role: !GetAtt CreateLambdaRole.Arn
-      FunctionName: lambda-api-function-cf
+      FunctionName: handle-image-upload-cs4296
       Environment:
         Variables:
+          ImageStoreBucket: !Ref CreateS3ImageStore
       Events:
         ReceiveAPIGatewayData:
           Type: Api
           Properties:
-            RestApiId: !Ref CreateAPIGateway
+            RestApiId: !Ref CreateAPIGatewaySwagger
             Path: /upload
             Method: POST
+
+  CreateLambdaGetResultFunc:
+    Type: 'AWS::Serverless::Function'
+    DependsOn: [ CreateS3ImageStore, CreateAPIGatewaySwagger, CreateLambdaRole ]
+    Properties:
+      CodeUri:
+        Bucket: !Ref LambdaCodeBucketName
+        Key: !Ref LambdaCodeObjectKey
+      Handler: 'LambdaCode/getImageOrResult.js'
+      Runtime: nodejs8.10
+      Description: ''
+      MemorySize: 128
+      Timeout: 10
+      Role: !GetAtt CreateLambdaRole.Arn
+      FunctionName: handle-get-image-result-cs4296
+      Environment:
+        Variables:
+          ImageStoreBucket: !Ref CreateS3ImageStore
+          ImageLabelResultsTable: "image-label-results-cs4296"
+      Events:
+        ReceiveAPIGatewayData1:
+          Type: Api
+          Properties:
+            RestApiId: !Ref CreateAPIGatewaySwagger
+            Path: /labelled-result
+            Method: GET
+        ReceiveAPIGatewayData2:
+          Type: Api
+          Properties:
+            RestApiId: !Ref CreateAPIGatewaySwagger
+            Path: /uploaded-image
+            Method: GET
+
   CreateLambdaS3TriggerRekoFunc:
     Type: 'AWS::Serverless::Function'
+    DependsOn: [ CreateLambdaS3TriggerRole ]
     Properties:
       CodeUri:
-        Bucket: !Ref BucketName
-        Key: !Ref ObjectKey
-      Handler: uploadFunc.handler
+        Bucket: !Ref LambdaCodeBucketName
+        Key: !Ref LambdaCodeObjectKey
+      Handler: 'LambdaCode/s3TriggerRekognition.js'
       Runtime: nodejs8.10
       Description: ''
       MemorySize: 128
-      Timeout: 20
-      Role: !GetAtt CreateLambdaRole.Arn
-      FunctionName: lambda-api-function-cf
+      Timeout: 10
+      Role: !GetAtt CreateLambdaS3TriggerRole.Arn
+      Policies:
+        - S3ReadPolicy:
+            BucketName: !Ref CreateS3ImageStore
+      FunctionName: s3trigger-reko-cs4296
       Environment:
         Variables:
+          ImageLabelResultsTable: "image-label-results-cs4296"
       Events:
-        ReceiveAPIGatewayData:
-          Type: Api
+        ImageUpload:
+          Type: S3
           Properties:
-            RestApiId: !Ref CreateAPIGateway
-            Path: /upload
-            Method: POST
+            Bucket: !Ref CreateS3ImageStore
+            Events: s3:ObjectCreated:put
 
 Outputs:
   ApiUrl:
     Description: URL of your API endpoint
     Value: !Sub https://${CreateAPIGatewaySwagger}.execute-api.${AWS::Region}.amazonaws.com
+  ImageStoreBucketName:
+    Value: !Ref CreateS3ImageStore
