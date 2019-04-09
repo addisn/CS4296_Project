@@ -63,7 +63,7 @@ async function getImgFromS3(filename) {
     return {
         statusCode: 200,
         headers: {
-            'Content-Type': s3Object.ContentType,
+            'Content-Type': 'image/*',
         },
         body: s3Object.Body.toString('base64'),
         isBase64Encoded: true
