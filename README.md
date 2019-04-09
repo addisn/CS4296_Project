@@ -2,7 +2,27 @@
 
 ## Overview
 
+<kbd><img src="./ReadmePicture/overview.jpg" /></kbd>
 
+## Try the api
+
+I have built the api that you can try it.
+
+* Upload - https://p81v4825wl.execute-api.us-east-1.amazonaws.com/prod/upload
+* Get labelled results - https://p81v4825wl.execute-api.us-east-1.amazonaws.com/prod/labelled-result?filename=
+* Get uploaded image - https://p81v4825wl.execute-api.us-east-1.amazonaws.com/prod/uploaded-image?filename=
+
+Please follow this [step](#5-test-the-api-using-postman) to try the api by using Postman.
+
+## Limitation
+
+Service|Limitations|Remarks
+---|---|---
+Lambda|Max payload: 6MB|https://docs.aws.amazon.com/en_us/lambda/latest/dg/limits.html
+API Gateway|Max payload: 10MB<br>Integration timeout: 29s|https://docs.aws.amazon.com/en_us/apigateway/latest/developerguide/limits.html
+Rekognition|Max image size: 15MB|https://docs.aws.amazon.com/en_us/rekognition/latest/dg/limits.html
+
+So the safe image upload request should be <=5MB within 25s.
 
 ## The backend setup guide (You can try it. It's up to you)
 
