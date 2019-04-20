@@ -63,7 +63,10 @@ async function getImgFromS3(filename) {
     return {
         statusCode: 200,
         headers: {
-            'Content-Type': 'image/*',
+            'Access-Control-Allow-Headers': 'Content-Type,Authorization,X-Amz-Date,X-Api-Key,X-Amz-Security-Token',
+            'Access-Control-Allow-Methods': 'GET,OPTIONS,POST',
+            'Access-Control-Allow-Origin': '*',
+            'Content-Type': 'image',
         },
         body: s3Object.Body.toString('base64'),
         isBase64Encoded: true
@@ -75,6 +78,9 @@ async function getImgLabels(filename) {
     return {
         statusCode: 200,
         headers: {
+            'Access-Control-Allow-Headers': 'Content-Type,Authorization,X-Amz-Date,X-Api-Key,X-Amz-Security-Token',
+            'Access-Control-Allow-Methods': 'GET,OPTIONS,POST',
+            'Access-Control-Allow-Origin': '*',
             'Content-Type': 'application/json',
         },
         body: JSON.stringify(imgRes)
