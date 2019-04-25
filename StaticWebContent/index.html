@@ -55,66 +55,74 @@
 			<div class="col-sm-10 col-md-10 offset-md-1 main-content text-center">
 				<div class="item">
 					<div class="intro">
-						<p>You can choose or upload an image here. It can recongizes
-							what is it in the image!</p>
+						<p>You will find it amazing when you upload an image. The
+							Rekognition can identify the things in your image!!!</p>
 					</div>
 					<div class="row">
 						<div class="col-sm-8 col-md-8 text-center show">
 							<h3>Show Image</h3>
 							<div class="row">
 								<div class="col-sm-12 col-md-12 text-center photo">
-									<img src="image/sea.jpeg" id="imgGrid" class="rounded">
+									<img src="image/notfound.png" id="imgGrid" class="rounded"
+										alt="not found">
 								</div>
 							</div>
-							<div class="row">
-								<div class="col-sm-6 col-md-6 text-center ">
-									<h5>Upload your own image!</h5>
-									<div class="row text-left ">
-										<p>
-											It must be JPG, JPEG or PNG <br>It must be smaller than
-											5MB
-										</p>
-										<div class="row col-sm-12 col-md-12">
-											<form id="uploadForm" method="POST" action="#" enctype="multipart/form-data">
-												<div class="alert alert-danger alert-dismissible fade show" role="alert" style="display: none">
-													<strong>The image size must be within 5MB!</strong>
-												</div>
-
-												<div class="form-group">
-													<div class="input-group mb-3">
-														<div class="custom-file">
-															<input type="file" class="custom-file-input"
-																id="browsefile" accept=".jpg, .jpeg, .png" name="imageFile" />
-															<label class="custom-file-label"
-																for="browsefile">Choose your image </label>
-														</div>
+							<div class="contentblock">
+								<div class="row">
+									<div class="col-sm-6 col-md-6 text-center ">
+										<h5>Upload your own image!</h5>
+										<div class="row text-left ">
+											<p>
+												It must be JPG, JPEG or PNG <br>It must be smaller than
+												5MB
+											</p>
+											<div class="row col-sm-12 col-md-12">
+												<form id="uploadForm" method="POST" action="#"
+													enctype="multipart/form-data">
+													<div class="alert alert-danger alert-dismissible fade show"
+														role="alert" style="display: none">
+														<strong>The image size must be within 5MB!</strong>
 													</div>
 
-												</div>
+													<div class="form-group">
+														<div class="input-group mb-3">
+															<div class="custom-file">
+																<input type="file" class="custom-file-input"
+																	id="browsefile" accept=".jpg, .jpeg, .png"
+																	name="imageFile" /> <label class="custom-file-label"
+																	for="browsefile">Choose your image </label>
+															</div>
+														</div>
 
-												<div class="text-center mb-1">
-													<button type="submit" class="btn btn-secondary" id="submitBtn" disabled>Upload</button>
-												</div>
-											</form>
+													</div>
+
+													<div class="text-center mb-1">
+														<button type="submit" class="btn btn-secondary"
+															id="submitBtn" disabled>Upload</button>
+													</div>
+												</form>
+											</div>
 										</div>
 									</div>
-								</div>
-								<div class="col-sm-6 col-md-6 text-center">
-									<h5>Pick one!</h5>
+									<div class="col-sm-6 col-md-6 text-center">
+										<h5>Pick one!</h5>
 
-									<div class="gallery">
-										<div class="row">
-											<div class="col-sm-4 col-xs-6 gallery_box">
-												<img class="img-fluid rounded " id="gallery_img0"
-													src="image/light.jpeg" alt="">
-											</div>
-											<div class="col-sm-4 col-xs-6 gallery_box">
-												<img class="img-fluid rounded " id="gallery_img1"
-													src="image/flower.jpeg" alt="">
-											</div>
-											<div class="col-sm-4 col-xs-6 gallery_box">
-												<img class="img-fluid rounded" id="gallery_img2"
-													src="image/clock.jpeg" alt="">
+										<div class="gallery">
+											<div class="row">
+												<div class="col-sm-4 col-xs-6 gallery_box">
+													<img class="
+													img-fluid rounded "
+														id="gallery_img0" src="image/umbrella.jpeg"
+														alt="lots of umbrellas">
+												</div>
+												<div class="col-sm-4 col-xs-6 gallery_box">
+													<img class="img-fluid rounded " id="gallery_img1"
+														src="image/cat.jpeg" alt="a cat">
+												</div>
+												<div class="col-sm-4 col-xs-6 gallery_box">
+													<img class="img-fluid rounded" id="gallery_img2"
+														src="image/rainday.jpeg" alt="a raining day">
+												</div>
 											</div>
 										</div>
 									</div>
@@ -127,7 +135,8 @@
 								<div class="spinner-border mt-5 mb-1" role="status"></div>
 								<div>Waiting for the results...</div>
 							</div>
-							<div class="result-block" id="result-panel"></div>
+							<div class="result-block scrollbar scrollbar-deep-blue"
+								id="result-panel"></div>
 						</div>
 					</div>
 				</div>

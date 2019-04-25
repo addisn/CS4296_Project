@@ -71,11 +71,14 @@ h5 {
 }
 
 .gallery {
-	padding: 5px;
+	padding: 10px;
 }
 
 .gallery_box {
 	padding: 0;
+}
+.gallery_box img{
+	max-height: 100%;
 }
 
 .gallery_box img:hover {
@@ -85,9 +88,31 @@ h5 {
 .resultlist {
 	margin-top: 5px;
 }
-
+.custom-file-label{
+	overflow: hidden;
+}
 .result-block {
 	overflow: auto;
 	height: 600px;
 	overflow-x: hidden;
+}
+.contentblock{
+	margin:8px;
+}
+.scrollbar-deep-blue::-webkit-scrollbar-track {
+	-webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.1);
+	background-color: #F5F5F5;
+	border-radius: 10px;
+}
+
+.scrollbar-deep-blue::-webkit-scrollbar {
+	width: 8px;
+	background-color: #F5F5F5;
+}
+
+.scrollbar-deep-blue::-webkit-scrollbar-thumb {
+	border-radius: 10px;
+	-webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.1);
+	background-image: -webkit-linear-gradient(330deg, #e0c3fc 0%, #8ec5fc 100%);
+	background-image: linear-gradient(120deg, #e0c3fc 0%, #8ec5fc 100%);
 }
