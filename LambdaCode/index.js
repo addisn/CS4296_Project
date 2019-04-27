@@ -25,6 +25,12 @@ exports.handler = async (event, context) => {
     const boundary = multipart.getBoundary(event.headers['content-type']);
     if (!boundary) return {
         statusCode: 400,
+        headers: {
+            'Access-Control-Allow-Headers': 'Content-Type,Authorization,X-Amz-Date,X-Api-Key,X-Amz-Security-Token',
+            'Access-Control-Allow-Methods': 'GET,OPTIONS,POST',
+            'Access-Control-Allow-Origin': '*',
+            'Content-Type': 'application/json',
+        },
         body: JSON.stringify({message: 'Cannot find boundary from header content-type'})
     };
 
@@ -40,12 +46,24 @@ exports.handler = async (event, context) => {
         imgExt = fType && fType.ext;
         if (!imgExt || (imgExt !== jpg && imgExt !== png)) return {
             statusCode: 400,
+            headers: {
+                'Access-Control-Allow-Headers': 'Content-Type,Authorization,X-Amz-Date,X-Api-Key,X-Amz-Security-Token',
+                'Access-Control-Allow-Methods': 'GET,OPTIONS,POST',
+                'Access-Control-Allow-Origin': '*',
+                'Content-Type': 'application/json',
+            },
             body: JSON.stringify({message: 'Unsupported image type'})
         };
     } catch (e) {
         console.log(e);
         return {
             statusCode: 400,
+            headers: {
+                'Access-Control-Allow-Headers': 'Content-Type,Authorization,X-Amz-Date,X-Api-Key,X-Amz-Security-Token',
+                'Access-Control-Allow-Methods': 'GET,OPTIONS,POST',
+                'Access-Control-Allow-Origin': '*',
+                'Content-Type': 'application/json',
+            },
             body: JSON.stringify({message: e.message})
         };
     }
@@ -66,8 +84,14 @@ exports.handler = async (event, context) => {
 
     return {
         statusCode: 200,
+        headers: {
+            'Access-Control-Allow-Headers': 'Content-Type,Authorization,X-Amz-Date,X-Api-Key,X-Amz-Security-Token',
+            'Access-Control-Allow-Methods': 'GET,OPTIONS,POST',
+            'Access-Control-Allow-Origin': '*',
+            'Content-Type': 'application/json',
+        },
         body: JSON.stringify({
-            message: 'Hello from Lambda!',
+            message: 'Lambda - image upload',
             imageFile: `${imgMd5}.${imgExt}`
         }),
     };
